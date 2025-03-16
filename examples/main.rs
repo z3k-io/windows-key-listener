@@ -1,52 +1,36 @@
 use std::{sync::Arc, time::Duration};
-
 use windows_key_listener::KeyListener;
+use log::LevelFilter;
 
 fn main() {
-    let key_listener = KeyListener::new();
+    env_logger::Builder::new()
+        .filter_level(LevelFilter::Debug)
+        .init();
 
-    let callback_interval = Duration::from_millis(200);
+    let key_listener = KeyListener::new();
+    let debounce_interval = Duration::from_millis(200);
 
     key_listener.listen(
-        "Ctrl + Shift + Z",
-        false,
-        callback_interval,
+        "Ctrl + Q",
+        debounce_interval,
         Arc::new(|| {
-            println!("Ctrl + Shift + Z pressed!");
+            println!("Ctrl + Q pressed!");
+            false // Propagate the event
         }),
-    );
+    ).expect("Failed to register Ctrl+Q shortcut");
 
     key_listener.listen(
         "VolumeUp",
-        true,
-        callback_interval,
+        debounce_interval,
         Arc::new(|| {
-            println!("VolumeUp pressed!");
+            println!("Volume Up pressed!");
+            true // Block the event
         }),
-    );
+    ).expect("Failed to register VolumeUp shortcut");
 
-    key_listener.listen(
-        "VolumeDown",
-        false,
-        callback_interval,
-        Arc::new(|| {
-            println!("VolumeDown pressed!");
-        }),
-    );
+    log::info!("Listening for key combinations...");
+    log::info!("Press Ctrl+Q to test or Ctrl+C to exit");
 
-    key_listener.listen(
-        "VolumeMute",
-        true,
-        callback_interval,
-        Arc::new(|| {
-            println!("VolumeMute pressed!");
-        }),
-    );
-
-    // Keep the main thread alive to keep listening for key presses
-    loop {
-        std::thread::sleep(std::time::Duration::from_secs(15));
-        println!("Unlistening...");
-        key_listener.unlisten();
-    }
+    // Run the message loop in the main thread
+    key_listener.run_message_loop();
 }

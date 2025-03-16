@@ -1,33 +1,30 @@
-# Rust Key Listener
+# Windows Key Listener
 
 A Rust library for global keyboard event listening and hotkey management on Windows.
-
-## Features
-
-- Global keyboard event capture
-- Support for complex key chord combinations
-- Customizable callback execution on key events
-- Configurable event blocking and trigger intervals
-- Thread-safe design for concurrent operations
 
 ## Usage
 
 ```rust
-use std::time::Duration;
-use std::sync::Arc;
+use windows_key_listener::KeyListener;
+use std::{sync::Arc, time::Duration};
 
 fn main() {
     let listener = KeyListener::new();
 
-    listener.listen(
-        "Ctrl+Shift+A",
-        true,
-        Duration::from_millis(500),
-        Arc::new(|| println!("Hotkey triggered!"))
+    // Register shortcuts
+    key_listener.listen(
+        "Ctrl + Shift + A", 
+        Duration::from_millis(200),
+        Arc::new(|| {
+            on_key_pressed();
+            false   // Return true to block the event
+        })
     );
 
-    // Keep the main thread alive
-    std::thread::park();
+    run_your_app();
+    
+    // When finished, clean up
+    key_listener.unlisten();
 }
 ```
 
@@ -37,13 +34,8 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-key_listener = "0.1.3"
+windows-key-listener = "x.y.z"
 ```
-
-## Requirements
-
-- Windows OS
-- Rust 1.80+
 
 ## License
 

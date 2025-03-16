@@ -1,14 +1,17 @@
 use std::collections::HashMap;
 use windows::Win32::UI::Input::KeyboardAndMouse::*;
 
+/// Parser for key chord strings like "Ctrl + Shift + A" into Windows virtual key codes.
 pub struct KeyChordParser {
     key_map: HashMap<String, i32>,
 }
 
 impl KeyChordParser {
+    /// Creates a new KeyChordParser with mappings for supported key names.
     pub fn new() -> Self {
         let mut key_map = HashMap::new();
 
+        // Modifier keys
         key_map.insert("ctrl".to_string(), VK_CONTROL.0 as i32);
         key_map.insert("lctrl".to_string(), VK_LCONTROL.0 as i32);
         key_map.insert("rctrl".to_string(), VK_RCONTROL.0 as i32);
@@ -21,6 +24,7 @@ impl KeyChordParser {
         key_map.insert("lalt".to_string(), VK_LMENU.0 as i32);
         key_map.insert("ralt".to_string(), VK_RMENU.0 as i32);
 
+        // Alphanumeric keys
         key_map.insert("a".to_string(), 0x41);
         key_map.insert("b".to_string(), 0x42);
         key_map.insert("c".to_string(), 0x43);
@@ -59,6 +63,7 @@ impl KeyChordParser {
         key_map.insert("8".to_string(), 0x38);
         key_map.insert("9".to_string(), 0x39);
 
+        // Function keys
         key_map.insert("f1".to_string(), 0x70);
         key_map.insert("f2".to_string(), 0x71);
         key_map.insert("f3".to_string(), 0x72);
@@ -72,6 +77,7 @@ impl KeyChordParser {
         key_map.insert("f11".to_string(), 0x7A);
         key_map.insert("f12".to_string(), 0x7B);
 
+        // Numpad keys
         key_map.insert("num0".to_string(), 0x60);
         key_map.insert("num1".to_string(), 0x61);
         key_map.insert("num2".to_string(), 0x62);
@@ -91,6 +97,7 @@ impl KeyChordParser {
         key_map.insert("numenter".to_string(), VK_RETURN.0 as i32);
         key_map.insert("numdecimal".to_string(), VK_DECIMAL.0 as i32);
 
+        // Special keys
         key_map.insert("back".to_string(), VK_BACK.0 as i32);
         key_map.insert("tab".to_string(), VK_TAB.0 as i32);
         key_map.insert("enter".to_string(), VK_RETURN.0 as i32);
@@ -98,6 +105,7 @@ impl KeyChordParser {
         key_map.insert("capslock".to_string(), VK_CAPITAL.0 as i32);
         key_map.insert("esc".to_string(), VK_ESCAPE.0 as i32);
 
+        // Navigation keys
         key_map.insert("left".to_string(), VK_LEFT.0 as i32);
         key_map.insert("right".to_string(), VK_RIGHT.0 as i32);
         key_map.insert("up".to_string(), VK_UP.0 as i32);
@@ -111,9 +119,9 @@ impl KeyChordParser {
         key_map.insert("insert".to_string(), VK_INSERT.0 as i32);
         key_map.insert("delete".to_string(), VK_DELETE.0 as i32);
 
+        // System keys
         key_map.insert("printscreen".to_string(), VK_SNAPSHOT.0 as i32);
         key_map.insert("scrolllock".to_string(), VK_SCROLL.0 as i32);
-
         key_map.insert("pause".to_string(), VK_PAUSE.0 as i32);
         key_map.insert("break".to_string(), VK_CANCEL.0 as i32);
         key_map.insert("menu".to_string(), VK_MENU.0 as i32);
@@ -127,6 +135,7 @@ impl KeyChordParser {
         key_map.insert("sleep".to_string(), VK_SLEEP.0 as i32);
         key_map.insert("zoom".to_string(), VK_ZOOM.0 as i32);
 
+        // Media keys
         key_map.insert("volumeup".to_string(), VK_VOLUME_UP.0 as i32);
         key_map.insert("volumedown".to_string(), VK_VOLUME_DOWN.0 as i32);
         key_map.insert("volumemute".to_string(), VK_VOLUME_MUTE.0 as i32);
@@ -139,6 +148,8 @@ impl KeyChordParser {
         KeyChordParser { key_map }
     }
 
+    /// Parses a key chord string into Windows virtual key codes.
+    /// Format: key names separated by '+', e.g., "Ctrl + Shift + Z"
     pub fn parse(&self, key_chord: &str) -> Option<Vec<i32>> {
         let mut vk_codes = Vec::new();
 
@@ -146,10 +157,14 @@ impl KeyChordParser {
             if let Some(&vk_code) = self.key_map.get(&key) {
                 vk_codes.push(vk_code);
             } else {
-                panic!("Unknown key: {}", key);
+                return None;
             }
         }
 
-        Some(vk_codes)
+        if vk_codes.is_empty() {
+            None
+        } else {
+            Some(vk_codes)
+        }
     }
 }
