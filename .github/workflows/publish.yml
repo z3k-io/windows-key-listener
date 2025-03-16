@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -17,6 +17,10 @@ jobs:
         with:
           toolchain: stable
           override: true
+          components: clippy
+
+      - name: Check Rust version
+        run: rustc --version
 
       - name: Publish to crates.io
         uses: katyo/publish-crates@v2
