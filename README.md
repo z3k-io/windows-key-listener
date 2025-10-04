@@ -23,7 +23,6 @@ fn main() {
 
     run_your_app();
     
-    // When finished, clean up
     key_listener.unlisten();
 }
 ```
