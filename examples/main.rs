@@ -11,7 +11,7 @@ fn main() {
     let debounce_interval = Duration::from_millis(200);
 
     key_listener.listen(
-        "Ctrl + Q",
+        "Ctrl + Shift + Q",
         debounce_interval,
         Arc::new(|| {
             println!("Ctrl + Q pressed!");
@@ -25,6 +25,15 @@ fn main() {
         Arc::new(|| {
             println!("Volume Up pressed!");
             true // Block the event
+        }),
+    ).expect("Failed to register VolumeUp shortcut");
+
+    key_listener.listen(
+        "VolumeDown",
+        debounce_interval,
+        Arc::new(|| {
+            println!("Volume Down pressed!");
+            false // Block the event
         }),
     ).expect("Failed to register VolumeUp shortcut");
 
